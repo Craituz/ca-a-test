@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CAÑA MANABITA — Destilado de Origen · Manabí, Ecuador</title>
+  <meta name="description" content="Caña Manabita: Aguardiente especial de caña de azúcar destilado en origen en Manabí, Ecuador.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================================
+       CAÑA MANABITA — FRONTEND MINIMALISTA HÍBRIDO (SpaceX DESIGN.md + Johnnie Walker)
+       Arquitectura preparada para migrar por componentes a Astro + Sveltia CMS
+       ========================================================================== */
+    :root {
+      /* Tokens de superficie (SpaceX DESIGN.md) */
+      --canvas-night: #000000;
+      --canvas-night-soft: #0a0a0a;
+      --canvas-elevated: #111113;
+      --on-primary: #ffffff;
+      --on-primary-mute: #f0f0fa;
+      --ink-mute: #8a8a93;
+      --hairline-on-dark: #2a2a2f;
+      --hairline-strong: rgba(255, 255, 255, 0.28);
+
+      /* Acentos quirúrgicos de marca (Híbrido Caña Manabita / Johnnie Walker) */
+      --brand-red: #D52029;
+      --brand-gold: #dfa43f;
+
+      /* Tipografía (D-DIN / Barlow Condensed + Inter) */
+      --font-display: 'Barlow Condensed', 'D-DIN-Bold', 'Arial Narrow', Arial, sans-serif;
+      --font-body: 'Inter', 'D-DIN', Arial, sans-serif;
+
+      /* Escala tipográfica (DESIGN.md: 80 -> 60 -> 48 -> 40) */
+      --display-xxl: clamp(2.75rem, 7vw, 5rem);      /* ~80px desktop */
+      --display-xl: clamp(2.2rem, 5vw, 3.75rem);     /* ~60px desktop */
+      --display-lg: clamp(1.75rem, 3.5vw, 3rem);     /* ~48px desktop */
+      --body-lg: 1rem;                               /* 16px / 1.7 */
+      --body-md: 0.9375rem;                          /* 15px / 1.5 */
+      --button-cap: 0.8125rem;                       /* 13px / 700 / 1.17px */
+      --micro-cap: 0.75rem;                          /* 12px / 400 / 0.96px */
+
+      /* Radios y Espaciado (DESIGN.md) */
+      --rounded-xs: 4px;
+      --rounded-sm: 8px;
+      --rounded-md: 16px;
+      --rounded-pill: 32px;
+      --max-width: 1200px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--canvas-night);
+      color: var(--on-primary);
+      font-family: var(--font-body);
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background-color: var(--canvas-night);
+      color: var(--on-primary);
+      line-height: 1.5;
+      letter-spacing: 0.32px;
+      overflow-x: hidden;
+    }
+
+    body.age-gate-locked {
+      overflow: hidden;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+      background: none;
+      border: none;
+    }
+
+    :focus-visible {
+      outline: 1px solid var(--on-primary);
+      outline-offset: 4px;
+    }
+
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+      width: 100%;
+    }
+
+    /* ===== Tipografía de Sistema (DESIGN.md) ===== */
+    h1, h2, h3, .display-heading {
+      font-family: var(--font-display);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: var(--micro-cap);
+      font-weight: 400;
+      text-transform: uppercase;
+      line-height: 2;
+      letter-spacing: 1.2px;
+      color: var(--on-primary-mute);
+      margin-bottom: 8px;
+    }
+
+    .eyebrow-gold {
+      color: var(--brand-gold);
+    }
+
+    /* ===== Botón Ghost Pill Signature (SpaceX DESIGN.md) ===== */
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 18px 28px;
+      min-height: 50px;
+      border-radius: var(--rounded-pill);
+      border: 1px solid var(--on-primary);
+      background-color: transparent;
+      color: var(--on-primary);
+      font-size: var(--button-cap);
+      font-weight: 700;
+      text-transform: uppercase;
+      line-height: 0.94;
+      letter-spacing: 1.17px;
+      cursor: pointer;
+      transition: background-color 0.25s var(--ease-out),
+                  color 0.25s var(--ease-out),
+                  border-color 0.25s var(--ease-out),
+                  transform 0.25s var(--ease-out);
+      user-select: none;
+    }
+
+    .btn-ghost:hover {
+      background-color: var(--on-primary);
+      color: var(--canvas-night);
+    }
+
+    .btn-ghost:active {
+      transform: scale(0.98);
+    }
+
+    /* ===== AGE GATE (Verificación de Fecha de Nacimiento estilo Johnnie Walker + SpaceX) ===== */
+    .age-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background-color: var(--canvas-night);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 24px;
+      text-align: center;
+      transition: opacity 0.45s var(--ease-out), visibility 0.45s var(--ease-out);
+    }
+
+    .age-gate.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .age-gate-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .age-gate-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(100%) contrast(1.15) brightness(0.22);
+      transform: scale(1.03);
+    }
+
+    .age-gate-top,
+    .age-gate-center,
+    .age-gate-bottom {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .age-gate-logo {
+      height: 48px;
+      width: auto;
+      margin: 0 auto;
+      filter: invert(1) brightness(2);
+    }
+
+    .age-gate-title {
+      font-size: clamp(2rem, 4.5vw, 3.25rem);
+      line-height: 0.98;
+      letter-spacing: 1.2px;
+      margin: 12px 0 10px;
+    }
+
+    .age-gate-subtitle {
+      font-size: 0.9375rem;
+      color: var(--on-primary-mute);
+      opacity: 0.82;
+      margin-bottom: 28px;
+    }
+
+    .dob-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.35fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .dob-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+
+    .dob-field label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 1.1px;
+      color: var(--ink-mute);
+    }
+
+    .dob-input {
+      width: 100%;
+      height: 54px;
+      padding: 12px 14px;
+      background-color: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hairline-on-dark);
+      border-radius: var(--rounded-xs);
+      color: var(--on-primary);
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .dob-input::placeholder {
+      color: rgba(255, 255, 255, 0.22);
+      font-weight: 600;
+    }
+
+    .dob-input:focus {
+      outline: none;
+      border-color: var(--on-primary);
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .age-remember {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 0.8125rem;
+      color: var(--on-primary-mute);
+      opacity: 0.85;
+      margin-bottom: 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .age-remember input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--brand-red);
+      cursor: pointer;
+    }
+
+    .age-error {
+      min-height: 22px;
+      font-size: 0.8125rem;
+      color: #ff6b72;
+      margin-top: 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .age-gate-bottom p {
+      font-size: 0.72rem;
+      color: var(--ink-mute);
+      line-height: 1.5;
+      letter-spacing: 0.4px;
+    }
+
+    /* ===== NAV OVERLAY (SpaceX DESIGN.md) ===== */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 24px 0;
+      background-color: transparent;
+      transition: background-color 0.3s ease, padding 0.3s ease, transform 0.35s var(--ease-out);
+    }
+
+    .site-header.is-scrolled {
+      background-color: rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 16px 0;
+      border-bottom: 1px solid var(--hairline-on-dark);
+    }
+
+    .site-header.is-hidden {
+      transform: translateY(-100%);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo img {
+      height: 38px;
+      width: auto;
+      filter: invert(1) brightness(2);
+    }
+
+    .main-nav ul {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .main-nav a {
+      font-size: var(--micro-cap);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.17px;
+      color: var(--on-primary);
+      position: relative;
+      padding: 6px 0;
+    }
+
+    .main-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background-color: var(--on-primary);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.25s var(--ease-out);
+    }
+
+    .main-nav a:hover::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .age-reopen-btn {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px 14px;
+      border-radius: var(--rounded-pill);
+      border: 1px solid var(--hairline-strong);
+      color: var(--on-primary-mute);
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .age-reopen-btn:hover {
+      border-color: var(--on-primary);
+      color: var(--on-primary);
+    }
+
+    .nav-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--rounded-pill);
+      color: var(--on-primary);
+      cursor: pointer;
+    }
+
+    /* ===== BANDAS FULL-VIEWPORT (SpaceX DESIGN.md) ===== */
+    .photo-band {
+      position: relative;
+      min-height: 100dvh;
+      width: 100%;
+      display: flex;
+      align-items: flex-end;
+      padding: 120px 0 80px;
+      background-color: var(--canvas-night);
+      overflow: hidden;
+    }
+
+    .photo-band-media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .photo-band-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.06) brightness(0.62);
+      transition: transform 6s ease-out, opacity 0.4s ease;
+    }
+
+    .photo-band-content {
+      position: relative;
+      z-index: 2;
+      max-width: 620px;
+    }
+
+    .photo-band h1,
+    .photo-band h2 {
+      font-size: var(--display-xxl);
+      line-height: 0.95;
+      letter-spacing: 1.6px;
+      margin-bottom: 18px;
+    }
+
+    .photo-band h2 {
+      font-size: var(--display-xl);
+      line-height: 1.05;
+      letter-spacing: 1.2px;
+    }
+
+    .photo-band p.lead {
+      font-size: var(--body-lg);
+      line-height: 1.7;
+      color: var(--on-primary-mute);
+      margin-bottom: 28px;
+      max-width: 48ch;
+    }
+
+    /* ===== SECCIÓN PRESENTACIONES (Vista previa minimalista estilo Johnnie Walker + SpaceX) ===== */
+    .presentations-section {
+      background-color: var(--canvas-night-soft);
+      border-top: 1px solid var(--hairline-on-dark);
+      border-bottom: 1px solid var(--hairline-on-dark);
+      padding: 96px 0;
+    }
+
+    .section-header-minimal {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 24px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+
+    .section-header-minimal h2 {
+      font-size: var(--display-xl);
+      line-height: 1.05;
+      letter-spacing: 1.2px;
+    }
+
+    .cms-ready-pill {
+      font-size: var(--micro-cap);
+      text-transform: uppercase;
+      letter-spacing: 0.96px;
+      color: var(--ink-mute);
+      border: 1px solid var(--hairline-on-dark);
+      padding: 6px 14px;
+      border-radius: var(--rounded-pill);
+    }
+
+    /* Grid minimalista de presentaciones: solo imagen previa + nombre */
+    .presentations-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .pres-card {
+      background-color: var(--canvas-night);
+      border: 1px solid var(--hairline-on-dark);
+      border-radius: var(--rounded-sm);
+      overflow: hidden;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.3s var(--ease-out), transform 0.3s var(--ease-out);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .pres-card:hover,
+    .pres-card.is-selected {
+      border-color: var(--on-primary);
+      transform: translateY(-4px);
+    }
+
+    .pres-card-media {
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background-color: #080808;
+    }
+
+    .pres-card-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: contrast(1.06) brightness(0.88);
+      transition: transform 0.6s var(--ease-out), filter 0.3s ease;
+    }
+
+    .pres-card:hover .pres-card-media img,
+    .pres-card.is-selected .pres-card-media img {
+      transform: scale(1.04);
+      filter: contrast(1.08) brightness(1);
+    }
+
+    .pres-accent-line {
+      height: 2px;
+      width: 100%;
+      background-color: var(--hairline-on-dark);
+      transition: background-color 0.3s ease;
+    }
+
+    .pres-card.is-selected .pres-accent-line,
+    .pres-card:hover .pres-accent-line {
+      background-color: var(--brand-red);
+    }
+
+    .pres-card-footer {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .pres-card-name {
+      font-family: var(--font-display);
+      font-size: 1.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.96px;
+      line-height: 1.1;
+      color: var(--on-primary);
+    }
+
+    .pres-card-tag {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--ink-mute);
+      white-space: nowrap;
+    }
+
+    .pres-preview-bar {
+      margin-top: 24px;
+      padding: 18px 24px;
+      border: 1px solid var(--hairline-on-dark);
+      border-radius: var(--rounded-xs);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--on-primary-mute);
+    }
+
+    /* ===== SECCIÓN PROCESO (Banda Full-Bleed con Selector Minimalista de 4 Pasos) ===== */
+    .process-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .process-pill {
+      padding: 12px 20px;
+      border-radius: var(--rounded-pill);
+      border: 1px solid var(--hairline-strong);
+      background-color: rgba(0, 0, 0, 0.55);
+      color: var(--on-primary-mute);
+      font-size: var(--micro-cap);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-out);
+    }
+
+    .process-pill.is-active,
+    .process-pill:hover {
+      background-color: var(--on-primary);
+      color: var(--canvas-night);
+      border-color: var(--on-primary);
+    }
+
+    /* ===== SECCIÓN HISTORIA (Minimalista en 3 pilares) ===== */
+    .history-section {
+      background-color: var(--canvas-night);
+      border-bottom: 1px solid var(--hairline-on-dark);
+      padding: 96px 0;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .history-item {
+      border-top: 1px solid var(--hairline-on-dark);
+      padding-top: 24px;
+    }
+
+    .history-item-num {
+      font-size: var(--micro-cap);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--brand-gold);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .history-item h3 {
+      font-size: 1.75rem;
+      letter-spacing: 0.96px;
+      margin-bottom: 10px;
+    }
+
+    .history-item p {
+      font-size: var(--body-md);
+      color: var(--ink-mute);
+      line-height: 1.6;
+    }
+
+    /* ===== NEWSLETTER MINIMALISTA ===== */
+    .newsletter-band {
+      background-color: var(--canvas-night-soft);
+      border-bottom: 1px solid var(--hairline-on-dark);
+      padding: 72px 0;
+    }
+
+    .newsletter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .newsletter-row h2 {
+      font-size: var(--display-lg);
+      line-height: 1.1;
+      letter-spacing: 0.96px;
+    }
+
+    .newsletter-form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 1;
+      max-width: 480px;
+    }
+
+    .text-input {
+      flex: 1;
+      min-width: 220px;
+      height: 50px;
+      padding: 12px 16px;
+      background-color: var(--canvas-night);
+      border: 1px solid var(--hairline-on-dark);
+      border-radius: var(--rounded-xs);
+      color: var(--on-primary);
+      font-size: var(--body-md);
+    }
+
+    .text-input:focus {
+      outline: none;
+      border-color: var(--on-primary);
+    }
+
+    .form-feedback {
+      width: 100%;
+      font-size: 0.8125rem;
+      color: var(--brand-gold);
+      margin-top: 6px;
+      min-height: 20px;
+    }
+
+    /* ===== FOOTER (SpaceX DESIGN.md + Consumo Responsable Johnnie Walker) ===== */
+    .site-footer {
+      background-color: var(--canvas-night);
+      padding: 48px 0 36px;
+      font-size: 0.8125rem;
+      color: var(--ink-mute);
+    }
+
+    .footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--hairline-on-dark);
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: var(--micro-cap);
+      text-transform: uppercase;
+      letter-spacing: 0.96px;
+      color: var(--on-primary);
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-bottom {
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.75rem;
+    }
+
+    /* ===== RESPONSIVE (DESIGN.md Breakpoints) ===== */
+    @media (max-width: 960px) {
+      .presentations-grid,
+      .history-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 20px;
+      }
+
+      .nav-toggle {
+        display: inline-flex;
+      }
+
+      .main-nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: min(300px, 82vw);
+        height: 100dvh;
+        background-color: var(--canvas-night);
+        border-left: 1px solid var(--hairline-on-dark);
+        padding: 88px 28px 32px;
+        transform: translateX(100%);
+        transition: transform 0.3s var(--ease-out);
+      }
+
+      .main-nav.is-open {
+        transform: translateX(0);
+      }
+
+      .main-nav ul {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body class="age-gate-locked">
+
+  <!-- ===== AGE GATE (Verificación de Fecha de Nacimiento al entrar a la web) ===== -->
+  <div class="age-gate" id="age-gate" role="dialog" aria-modal="true" aria-labelledby="age-gate-heading">
+    <div class="age-gate-bg" aria-hidden="true">
+      <img src="assets/Caña Planta-68.jpg" alt="">
+    </div>
+
+    <div class="age-gate-top">
+      <img src="assets/logo-header.png" alt="Caña Manabita" class="age-gate-logo">
+    </div>
+
+    <div class="age-gate-center">
+      <span class="eyebrow eyebrow-gold">Manabí · Ecuador</span>
+      <h2 class="age-gate-title" id="age-gate-heading">CONFIRMA TU FECHA DE NACIMIENTO</h2>
+      <p class="age-gate-subtitle">Para ingresar al sitio oficial de Caña Manabita debes ser mayor de 18 años.</p>
+
+      <form id="age-gate-form" novalidate>
+        <div class="dob-inputs">
+          <div class="dob-field">
+            <label for="dob-day">Día</label>
+            <input type="text" id="dob-day" class="dob-input" inputmode="numeric" maxlength="2" placeholder="DD" required>
+          </div>
+          <div class="dob-field">
+            <label for="dob-month">Mes</label>
+            <input type="text" id="dob-month" class="dob-input" inputmode="numeric" maxlength="2" placeholder="MM" required>
+          </div>
+          <div class="dob-field">
+            <label for="dob-year">Año</label>
+            <input type="text" id="dob-year" class="dob-input" inputmode="numeric" maxlength="4" placeholder="AAAA" required>
+          </div>
+        </div>
+
+        <label class="age-remember">
+          <input type="checkbox" id="dob-remember" checked>
+          <span>Recordarme en este dispositivo</span>
+        </label>
+
+        <div>
+          <button type="submit" class="btn-ghost" style="width: 100%;">
+            <span>ENTRAR AL SITIO</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <div class="age-error" id="age-gate-error" role="alert" aria-live="assertive"></div>
+      </form>
+    </div>
+
+    <div class="age-gate-bottom">
+      <p>Solicitar tu edad forma parte de nuestro compromiso con el consumo responsable. Prohibida la venta y el reenvío de este contenido a menores de 18 años.</p>
+    </div>
+  </div>
+
+  <!-- ===== HEADER OVERLAY (SpaceX DESIGN.md) ===== -->
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+      <a href="#inicio" class="logo" aria-label="Caña Manabita — Inicio">
+        <img src="assets/logo-header.png" alt="Caña Manabita">
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Navegación principal">
+        <ul>
+          <li><a href="#presentaciones" class="nav-link">Presentaciones</a></li>
+          <li><a href="#proceso" class="nav-link">Proceso</a></li>
+          <li><a href="#historia" class="nav-link">Historia</a></li>
+          <li><a href="#contacto" class="nav-link">Contacto</a></li>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button type="button" class="age-reopen-btn" id="reopen-age-gate" title="Volver a mostrar verificación de fecha de nacimiento">
+          Verificar +18
+        </button>
+        <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Abrir menú" aria-expanded="false">
+          ☰
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido-principal">
+
+    <!-- ===== 01 / HERO FULL-BLEED (SpaceX DESIGN.md) ===== -->
+    <section class="photo-band" id="inicio">
+      <div class="photo-band-media">
+        <img src="assets/Caña Planta-68.jpg" alt="Destilería de Caña Manabita en Manabí, Ecuador">
+      </div>
+      <div class="container">
+        <div class="photo-band-content">
+          <span class="eyebrow">Tradición de Manabí · Ecuador</span>
+          <h1>CAÑA MANABITA</h1>
+          <p class="lead">
+            Aguardiente de caña destilado en origen. Pureza industrial y el carácter intacto de nuestra tierra.
+          </p>
+          <a href="#presentaciones" class="btn-ghost">
+            <span>VER PRESENTACIONES</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 02 / PRESENTACIONES (Vista previa minimalista solo con nombres) ===== -->
+    <section id="presentaciones" class="presentations-section">
+      <div class="container">
+        <div class="section-header-minimal">
+          <div>
+            <span class="eyebrow eyebrow-gold">Nuestras Etiquetas</span>
+            <h2>PRESENTACIONES</h2>
+          </div>
+          <span class="cms-ready-pill">Vista Previa · Catálogo Base</span>
+        </div>
+
+        <div class="presentations-grid" role="list">
+          <button type="button" class="pres-card is-selected" data-pres-name="Caña Manabita · Etiqueta Roja" role="listitem">
+            <div class="pres-card-media">
+              <img src="assets/Caña Planta-17.jpg" alt="Caña Manabita Etiqueta Roja">
+            </div>
+            <div class="pres-accent-line"></div>
+            <div class="pres-card-footer">
+              <span class="pres-card-name">CAÑA MANABITA · ETIQUETA ROJA</span>
+              <span class="pres-card-tag">Vista previa</span>
+            </div>
+          </button>
+
+          <button type="button" class="pres-card" data-pres-name="Caña Manabita · Media" role="listitem">
+            <div class="pres-card-media">
+              <img src="assets/Caña Planta-8.jpg" alt="Caña Manabita Media">
+            </div>
+            <div class="pres-accent-line"></div>
+            <div class="pres-card-footer">
+              <span class="pres-card-name">CAÑA MANABITA · MEDIA</span>
+              <span class="pres-card-tag">Vista previa</span>
+            </div>
+          </button>
+
+          <button type="button" class="pres-card" data-pres-name="Caña Manabita · Litro" role="listitem">
+            <div class="pres-card-media">
+              <img src="assets/Caña Planta-5.jpg" alt="Caña Manabita Litro">
+            </div>
+            <div class="pres-accent-line"></div>
+            <div class="pres-card-footer">
+              <span class="pres-card-name">CAÑA MANABITA · LITRO</span>
+              <span class="pres-card-tag">Vista previa</span>
+            </div>
+          </button>
+        </div>
+
+        <div class="pres-preview-bar" aria-live="polite">
+          <span>Selección activa: <strong id="selected-pres-label">CAÑA MANABITA · ETIQUETA ROJA</strong></span>
+          <span style="color: var(--ink-mute);">Ficha técnica editable próximamente vía CMS</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 03 / EL PROCESO (Banda Fotográfica Full-Bleed minimalista) ===== -->
+    <section id="proceso" class="photo-band">
+      <div class="photo-band-media">
+        <img id="process-bg-img" src="assets/Caña Planta-5.jpg" alt="Proceso de destilación de Caña Manabita">
+      </div>
+      <div class="container">
+        <div class="photo-band-content">
+          <span class="eyebrow" id="process-eyebrow">01 / Cómo se hace</span>
+          <h2 id="process-heading">DEL CAÑAVERAL A LA BOTELLA</h2>
+          <p class="lead" id="process-copy">
+            Caña seleccionada en valles manabitas y molienda fresca en las primeras horas tras el corte para conservar intacto el aroma del guarapo.
+          </p>
+          <div class="process-controls" role="tablist" aria-label="Etapas del proceso">
+            <button type="button" class="process-pill is-active" data-step="0" role="tab" aria-selected="true">01. Corte y Molienda</button>
+            <button type="button" class="process-pill" data-step="1" role="tab" aria-selected="false">02. Fermentación</button>
+            <button type="button" class="process-pill" data-step="2" role="tab" aria-selected="false">03. Destilación</button>
+            <button type="button" class="process-pill" data-step="3" role="tab" aria-selected="false">04. Envasado</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 04 / NUESTRA HISTORIA (Minimalista) ===== -->
+    <section id="historia" class="history-section">
+      <div class="container">
+        <div class="section-header-minimal">
+          <div>
+            <span class="eyebrow eyebrow-gold">Desde Manabí</span>
+            <h2>NUESTRA HISTORIA</h2>
+          </div>
+        </div>
+
+        <div class="history-grid">
+          <article class="history-item">
+            <span class="history-item-num">I · El Origen</span>
+            <h3>RAÍCES CAÑERAS</h3>
+            <p>Nacimos en el corazón de Manabí, donde el cultivo de la caña de azúcar y el oficio destilador forman parte de nuestra identidad cultural.</p>
+          </article>
+
+          <article class="history-item">
+            <span class="history-item-num">II · La Tradición</span>
+            <h3>PUREZA EN DESTILACIÓN</h3>
+            <p>Respetamos el carácter del aguardiente tradicional manabita llevándolo a columnas de destilación continua de alta precisión.</p>
+          </article>
+
+          <article class="history-item">
+            <span class="history-item-num">III · Hoy y Siempre</span>
+            <h3>CARÁCTER PROPIO</h3>
+            <p>Una marca emblemática que evoluciona con estándares contemporáneos manteniendo intacta la esencia de su origen.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 05 / NEWSLETTER MINIMALISTA ===== -->
+    <section class="newsletter-band" aria-label="Boletín de novedades">
+      <div class="container">
+        <div class="newsletter-row">
+          <div>
+            <span class="eyebrow">Novedades y Lanzamientos</span>
+            <h2>MANTENTE AL DÍA</h2>
+          </div>
+          <form class="newsletter-form" id="newsletter-form" novalidate>
+            <input type="email" id="newsletter-email" class="text-input" placeholder="Tu correo electrónico" aria-label="Tu correo electrónico" required>
+            <button type="submit" class="btn-ghost">SUSCRIBIRME</button>
+            <div class="form-feedback" id="newsletter-feedback" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER (SpaceX DESIGN.md + Aviso Legal +18) ===== -->
+  <footer id="contacto" class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-links">
+          <a href="#presentaciones">Presentaciones</a>
+          <a href="#proceso">Proceso</a>
+          <a href="#historia">Historia</a>
+          <a href="mailto:info@canamanabita.com">info@canamanabita.com</a>
+        </div>
+        <div class="footer-links">
+          <a href="#contacto" data-social="Instagram">Instagram</a>
+          <a href="#contacto" data-social="Facebook">Facebook</a>
+          <a href="#contacto" data-social="TikTok">TikTok</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>Prohibida la venta de bebidas alcohólicas a menores de 18 años. Bebe con responsabilidad.</p>
+        <p>© <span id="year">2026</span> CAÑA MANABITA · MANABÍ, ECUADOR</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      // 1. Año actual
+      var yearEl = document.getElementById('year');
+      if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
+      }
+
+      // 2. Age Gate (Verificación de Fecha de Nacimiento al entrar a la web)
+      var ageGate = document.getElementById('age-gate');
+      var ageForm = document.getElementById('age-gate-form');
+      var dayInput = document.getElementById('dob-day');
+      var monthInput = document.getElementById('dob-month');
+      var yearInput = document.getElementById('dob-year');
+      var rememberInput = document.getElementById('dob-remember');
+      var ageError = document.getElementById('age-gate-error');
+      var reopenAgeBtn = document.getElementById('reopen-age-gate');
+
+      function unlockSite(savePreference) {
+        if (ageGate) {
+          ageGate.classList.add('is-hidden');
+        }
+        document.body.classList.remove('age-gate-locked');
+        if (savePreference) {
+          try {
+            localStorage.setItem('cm_age_verified', 'true');
+          } catch (e) {}
+        }
+      }
+
+      function openAgeGate() {
+        if (ageGate) {
+          ageGate.classList.remove('is-hidden');
+        }
+        document.body.classList.add('age-gate-locked');
+        if (ageError) ageError.textContent = '';
+        if (dayInput) dayInput.focus();
+      }
+
+      // Auto-avance entre campos DD -> MM -> AAAA y solo dígitos
+      function setupNumericAdvance(input, maxLen, nextInput) {
+        if (!input) return;
+        input.addEventListener('input', function () {
+          input.value = input.value.replace(/\D/g, '').slice(0, maxLen);
+          if (input.value.length === maxLen && nextInput) {
+            nextInput.focus();
+          }
+        });
+      }
+
+      setupNumericAdvance(dayInput, 2, monthInput);
+      setupNumericAdvance(monthInput, 2, yearInput);
+      setupNumericAdvance(yearInput, 4, null);
+
+      if (ageForm) {
+        ageForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var d = parseInt(dayInput.value, 10);
+          var m = parseInt(monthInput.value, 10);
+          var y = parseInt(yearInput.value, 10);
+          var now = new Date();
+          var currentYear = now.getFullYear();
+
+          if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > currentYear) {
+            if (ageError) {
+              ageError.textContent = 'Por favor ingresa una fecha de nacimiento válida (DD / MM / AAAA).';
+            }
+            return;
+          }
+
+          var birthDate = new Date(y, m - 1, d);
+          if (birthDate.getFullYear() !== y || birthDate.getMonth() !== m - 1 || birthDate.getDate() !== d) {
+            if (ageError) {
+              ageError.textContent = 'La fecha indicada no es válida. Verifica el día y el mes.';
+            }
+            return;
+          }
+
+          var age = currentYear - y;
+          var monthDiff = now.getMonth() - (m - 1);
+          if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < d)) {
+            age--;
+          }
+
+          if (age < 18) {
+            if (ageError) {
+              ageError.textContent = 'Lo sentimos, debes ser mayor de 18 años para ingresar a este sitio.';
+            }
+            return;
+          }
+
+          if (ageError) ageError.textContent = '';
+          unlockSite(rememberInput && rememberInput.checked);
+        });
+      }
+
+      if (reopenAgeBtn) {
+        reopenAgeBtn.addEventListener('click', function () {
+          try {
+            localStorage.removeItem('cm_age_verified');
+          } catch (e) {}
+          openAgeGate();
+        });
+      }
+
+      // 3. Navegación móvil y Header en scroll
+      var header = document.getElementById('site-header');
+      var navToggle = document.getElementById('nav-toggle');
+      var mainNav = document.getElementById('main-nav');
+      var navLinks = document.querySelectorAll('.nav-link');
+      var lastScrollY = window.scrollY;
+
+      if (navToggle && mainNav) {
+        navToggle.addEventListener('click', function () {
+          var isOpen = mainNav.classList.toggle('is-open');
+          navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          navToggle.textContent = isOpen ? '✕' : '☰';
+        });
+
+        navLinks.forEach(function (link) {
+          link.addEventListener('click', function () {
+            mainNav.classList.remove('is-open');
+            navToggle.setAttribute('aria-expanded', 'false');
+            navToggle.textContent = '☰';
+          });
+        });
+      }
+
+      window.addEventListener('scroll', function () {
+        var y = window.scrollY;
+        if (header) {
+          header.classList.toggle('is-scrolled', y > 40);
+          if (y > 320 && y > lastScrollY + 8) {
+            header.classList.add('is-hidden');
+          } else if (y < lastScrollY - 8 || y <= 100) {
+            header.classList.remove('is-hidden');
+          }
+        }
+        lastScrollY = y;
+      }, { passive: true });
+
+      // 4. Vista previa minimalista de Presentaciones (Solo nombres)
+      var presCards = document.querySelectorAll('.pres-card');
+      var selectedPresLabel = document.getElementById('selected-pres-label');
+
+      presCards.forEach(function (card) {
+        card.addEventListener('click', function () {
+          presCards.forEach(function (c) { c.classList.remove('is-selected'); });
+          card.classList.add('is-selected');
+          var name = card.getAttribute('data-pres-name');
+          if (selectedPresLabel && name) {
+            selectedPresLabel.textContent = name.toUpperCase();
+          }
+        });
+      });
+
+      // 5. Selector minimalista del Proceso
+      var processData = [
+        {
+          eyebrow: '01 / Cómo se hace',
+          heading: 'CORTE Y MOLIENDA FRESCA',
+          copy: 'Caña seleccionada en valles manabitas y molienda fresca en las primeras horas tras el corte para conservar intacto el aroma del guarapo.',
+          img: 'assets/Caña Planta-5.jpg'
+        },
+        {
+          eyebrow: '02 / Cómo se hace',
+          heading: 'FERMENTACIÓN DE JUGO VIRGEN',
+          copy: 'El guarapo fresco fermenta a temperatura controlada desarrollando el perfil limpio y herbal característico de Manabí.',
+          img: 'assets/Caña Planta-8.jpg'
+        },
+        {
+          eyebrow: '03 / Cómo se hace',
+          heading: 'DESTILACIÓN EN COLUMNA',
+          copy: 'Rectificación continua en torre de acero inoxidable para separar con precisión el corazón cristalino del aguardiente.',
+          img: 'assets/Caña Planta-68.jpg'
+        },
+        {
+          eyebrow: '04 / Cómo se hace',
+          heading: 'ENVASADO EN ORIGEN',
+          copy: 'Reposo en tanques inertes, control óptico y sellado de seguridad en nuestra línea de embotellado en Manabí.',
+          img: 'assets/Caña Planta-17.jpg'
+        }
+      ];
+
+      var processPills = document.querySelectorAll('.process-pill');
+      var processBgImg = document.getElementById('process-bg-img');
+      var processEyebrow = document.getElementById('process-eyebrow');
+      var processHeading = document.getElementById('process-heading');
+      var processCopy = document.getElementById('process-copy');
+
+      processPills.forEach(function (pill) {
+        pill.addEventListener('click', function () {
+          var idx = parseInt(pill.getAttribute('data-step'), 10);
+          var item = processData[idx];
+          if (!item) return;
+
+          processPills.forEach(function (p) {
+            p.classList.remove('is-active');
+            p.setAttribute('aria-selected', 'false');
+          });
+          pill.classList.add('is-active');
+          pill.setAttribute('aria-selected', 'true');
+
+          if (processBgImg) processBgImg.src = item.img;
+          if (processEyebrow) processEyebrow.textContent = item.eyebrow;
+          if (processHeading) processHeading.textContent = item.heading;
+          if (processCopy) processCopy.textContent = item.copy;
+        });
+      });
+
+      // 6. Formulario de Newsletter minimalista
+      var newsForm = document.getElementById('newsletter-form');
+      var newsEmail = document.getElementById('newsletter-email');
+      var newsFeedback = document.getElementById('newsletter-feedback');
+
+      if (newsForm && newsEmail && newsFeedback) {
+        newsForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var val = newsEmail.value.trim();
+          if (!val || val.indexOf('@') === -1) {
+            newsFeedback.textContent = 'Por favor ingresa un correo electrónico válido.';
+            return;
+          }
+          newsFeedback.textContent = 'Suscripción registrada para ' + val + '.';
+          newsForm.reset();
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
